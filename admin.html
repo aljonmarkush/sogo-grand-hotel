@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Sogo Grand Hotel Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --admin-primary: #0f172a;
+            --admin-accent: #dc2626;
+            --admin-bg: #f8fafc;
+            --admin-surface: #ffffff;
+            --admin-border: #e2e8f0;
+            --admin-text: #1e293b;
+            --admin-text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--admin-bg);
+            color: var(--admin-text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background: var(--admin-primary);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-brand span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu a.active, .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+
+        /* Main Content Panel */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.5rem;
+            max-width: calc(100vw - 260px);
+        }
+
+        /* Top Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: var(--admin-surface);
+            padding: 1.25rem 2rem;
+            border-radius: 14px;
+            border: 1px solid var(--admin-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--admin-primary);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--admin-border);
+            color: var(--admin-text);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--admin-surface);
+            padding: 1.5rem;
+            border-radius: 14px;
+            border: 1px solid var(--admin-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .stat-card h4 {
+            color: var(--admin-text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--admin-primary);
+            margin-top: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        /* Table Section */
+        .table-container {
+            background: var(--admin-surface);
+            border-radius: 14px;
+            border: 1px solid var(--admin-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+
+        .table-header-wrapper {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--admin-border);
+        }
+
+        .table-header-wrapper h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--admin-primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--admin-border);
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--admin-text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fcfcfc;
+        }
+
+        /* Modern Badges */
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            letter-spacing: -0.01em;
+        }
+        .badge-confirmed { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-checkedin { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-checkedout { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-checkin { background: #2563eb; color: white; box-shadow: 0 1px 2px rgba(37,99,235,0.2); }
+        .btn-checkin:hover { background: #1d4ed8; }
+        .btn-checkout { background: #059669; color: white; box-shadow: 0 1px 2px rgba(5,150,105,0.2); }
+        .btn-checkout:hover { background: #047857; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 70px; padding: 1.5rem 0.75rem; }
+            .sidebar-brand span, .sidebar-menu span { display: none; }
+            .main-content { margin-left: 70px; max-width: calc(100vw - 70px); padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h2>Sogo Grand</h2>
+                <span>Management Panel</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><span>📊 Overview & Reservations</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="index.html" class="btn-outline" style="width: 100%; justify-content: center; color: #94a3b8; border-color: rgba(255,255,255,0.1);">Log Out / Exit</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT VIEW -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <h1>Hotel Operations Dashboard</h1>
+            <a href="index.html" class="btn-outline">Return to Front Desk</a>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Reservations</h4>
+                <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Active Checked-In</h4>
+                <div class="stat-value" id="statCheckedIn">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Pending / Confirmed</h4>
+                <div class="stat-value" id="statConfirmed">0</div>
+            </div>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <div class="table-container">
+            <div class="table-header-wrapper">
+                <h3>Live Reservations Register</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Guest Name</th>
+                        <th>Stay Schedule</th>
+                        <th>Room</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationTableBody">
+                    <tr><td colspan="7" style="text-align: center; color: var(--admin-text-muted); padding: 2rem;">Loading operations data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+        import { getCurrentUser } from './js/auth.js';
+
+        // Check if user is staff/admin
+        async function authorize() {
+            const user = await getCurrentUser();
+            if (!user || (user.profile.role !== 'admin' && user.profile.role !== 'staff')) {
+                alert('Access Restricted. Staff authorization required.');
+                window.location.href = 'index.html';
+            }
+        }
+        authorize();
+
+        async function loadDashboard() {
+            const { data: res, error } = await supabase
+                .from('reservations')
+                .select(`
+                    id, reservation_code, check_in_date, check_out_date, total_amount, reservation_status,
+                    profiles (first_name, last_name),
+                    rooms (room_number)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            // Calculations
+            document.getElementById('statTotal').innerText = res.length;
+            document.getElementById('statCheckedIn').innerText = res.filter(r => r.reservation_status === 'Checked-In').length;
+            document.getElementById('statConfirmed').innerText = res.filter(r => r.reservation_status === 'Confirmed').length;
+
+            // Render Table
+            const tbody = document.getElementById('reservationTableBody');
+            if (res.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--admin-text-muted); padding: 2rem;">No reservations found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = res.map(r => {
+                const statusClass = r.reservation_status ? r.reservation_status.toLowerCase().replace(/\s+/g, '') : 'confirmed';
+                return `
+                    <tr>
+                        <td><strong>${r.reservation_code || 'N/A'}</strong></td>
+                        <td>${r.profiles?.first_name || 'Guest'} ${r.profiles?.last_name || ''}</td>
+                        <td>${r.check_in_date} → ${r.check_out_date}</td>
+                        <td>Room ${r.rooms?.room_number || 'N/A'}</td>
+                        <td>$${Number(r.total_amount).toFixed(2)}</td>
+                        <td><span class="badge badge-${statusClass}">${r.reservation_status}</span></td>
+                        <td>
+                            ${r.reservation_status === 'Confirmed' ? `<button class="btn-action btn-checkin" onclick="updateStatus('${r.id}', 'Checked-In')">Check In</button>` : ''}
+                            ${r.reservation_status === 'Checked-In' ? `<button class="btn-action btn-checkout" onclick="updateStatus('${r.id}', 'Checked-Out')">Check Out</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.updateStatus = async (id, status) => {
+            const { error } = await supabase
+                .from('reservations')
+                .update({ reservation_status: status })
+                .eq('id', id);
+
+            if (error) alert('Error updating record: ' + error.message);
+            else loadDashboard();
+        };
+
+        loadDashboard();
+    </script>
+</body>
+</html>

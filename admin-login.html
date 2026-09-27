@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal Login — Sogo Grand Hotel</title>
+    <style>
+        :root {
+            --admin-primary: #0f172a;
+            --admin-hover: #1e293b;
+            --admin-border: #cbd5e1;
+            --admin-text: #1e293b;
+            --admin-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--admin-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .login-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--admin-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            font-size: 0.875rem;
+            color: var(--admin-muted);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--admin-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--admin-border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            color: var(--admin-text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            background: #ffffff;
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: var(--admin-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--admin-hover);
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--admin-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .back-home:hover {
+            color: var(--admin-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Admin Portal</h2>
+            <p>Elevated access required for management control.</p>
+        </div>
+
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminEmail">Staff Email</label>
+                <input type="email" id="adminEmail" placeholder="admin@sogogrand.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Authorize & Sign In</button>
+        </form>
+
+        <a href="index.html" class="back-link back-home">← Return to Website Home</a>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            // 1. Authenticate with Supabase Auth
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                alert("Authentication failed: " + error.message);
+                return;
+            }
+
+            // 2. Query the profiles table to verify role permissions
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'staff')) {
+                alert("Access Denied: This account does not have staff or administrator privileges.");
+                await supabase.auth.signOut(); // Log them out immediately for safety
+            } else {
+                // 3. Authorization successful -> redirect to admin dashboard
+                window.location.href = 'admin.html';
+            }
+        });
+    </script>
+</body>
+</html>

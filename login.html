@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Access — Sogo Grand Hotel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+      :root {
+    --auth-primary: #dc2626;
+    --auth-primary-hover: #b91c1c;
+    --auth-accent: #f59e0b;
+    --auth-dark: #0f172a;
+    --auth-text: #1e293b;
+    --auth-text-muted: #64748b;
+    --auth-border: rgba(226, 232, 240, 0.8);
+    --auth-border-focus: #cbd5e1;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Apple System Typography & Anti-Aliasing */
+body, input, button, select, textarea {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Split-Screen Main Container */
+.split-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* LEFT SIDE: Hero Image Panel */
+.hero-panel {
+    flex: 1.1;
+    position: relative;
+    background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    color: #ffffff;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%);
+    z-index: 1;
+}
+
+.hero-header, .hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.hero-brand img {
+    height: 40px;
+    width: auto;
+    border-radius: 10px;
+}
+
+.hero-content h1 {
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    letter-spacing: -0.03em;
+}
+
+.hero-content p {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 440px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* RIGHT SIDE: Auth Form Panel */
+.form-panel {
+    flex: 0.9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    background: #ffffff;
+    position: relative;
+    animation: fadeInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 400px;
+}
+
+.back-link {
+    position: absolute;
+    top: 2.5rem;
+    right: 2.5rem;
+    text-decoration: none;
+    color: var(--auth-text-muted);
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--auth-dark);
+}
+
+.form-header {
+    margin-bottom: 2rem;
+}
+
+.form-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--auth-dark);
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.form-header p {
+    font-size: 0.9375rem;
+    color: var(--auth-text-muted);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* iOS-Style Segmented Tab Switcher */
+.auth-tabs {
+    display: flex;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--auth-text-muted);
+    border: none;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-tab-btn.active {
+    background: #ffffff;
+    color: var(--auth-dark);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Form Inputs & Elements */
+.form-section {
+    display: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--auth-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-wrapper input {
+    width: 100%;
+    padding: 0.8125rem 1rem 0.8125rem 2.75rem;
+    background: #f8fafc;
+    border: 1px solid var(--auth-border);
+    border-radius: 12px;
+    color: var(--auth-text);
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-icon-wrapper input::placeholder {
+    color: #94a3b8;
+}
+
+.input-icon-wrapper input:focus {
+    background: #ffffff;
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.15);
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.input-icon-wrapper input:focus + .input-icon,
+.input-icon-wrapper input:focus ~ .input-icon {
+    color: var(--auth-dark);
+}
+
+/* Action Buttons */
+.submit-btn {
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--auth-primary);
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit-btn:hover {
+    background: var(--auth-primary-hover);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+/* Animations */
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+    .split-container {
+        flex-direction: column;
+    }
+    .hero-panel {
+        min-height: 240px;
+        padding: 2rem;
+        flex: none;
+    }
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    .hero-content p, .hero-badges {
+        display: none;
+    }
+    .form-panel {
+        padding: 2.5rem 1.5rem;
+    }
+    .back-link {
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <div class="split-container">
+        
+        <!-- LEFT HALF: HOTEL SHOWCASE -->
+        <div class="hero-panel">
+            <div class="hero-overlay"></div>
+            
+            <div class="hero-header">
+                <a href="index.html" class="hero-brand">
+                    <img src="images/logo.jpg" alt="Logo">
+                    <span>Sogo Grand</span>
+                </a>
+            </div>
+
+            <div class="hero-content">
+                <h1>Experience World-Class Luxury.</h1>
+                <p>Sign in to unlock exclusive guest privileges, manage dynamic bookings, and enjoy tailored hospitality.</p>
+                
+                <div class="hero-badges">
+                    <div class="badge-item">
+                        <span>★</span> 5-Star Experience
+                    </div>
+                    <div class="badge-item">
+                        <span>⚡</span> Instant Reservation
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT HALF: AUTHENTICATION FORMS -->
+        <div class="form-panel">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div class="form-wrapper">
+                
+                <div class="form-header">
+                    <h2 id="authTitle">Welcome Back</h2>
+                    <p id="authSubtitle">Please enter your credentials to access your account.</p>
+                </div>
+
+                <!-- TAB CONTROLS -->
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+                    <button type="button" class="auth-tab-btn" id="tabRegister" onclick="switchAuthTab('register')">Register</button>
+                </div>
+
+                <!-- SIGN IN FORM -->
+                <form id="standaloneLoginForm" class="form-section active">
+                    <div class="form-group">
+                        <label for="pageLoginEmail">Email Address</label>
+                        <div class="input-icon-wrapper">
+                            <input type="email" id="pageLoginEmail" placeholder="name@example.com" required>
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pageLoginPassword">Password</label>
+                        <div class="input-icon-wrapper">
+                            <input type="password" id="pageLoginPassword" placeholder="••••••••" required>
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Sign In to Account</button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="standaloneRegisterForm" class="form-section">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div class="form-group">
+                            <label for="pageRegFirstName">First Name</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="pageRegFirstName" placeholder="John" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pageRegLastName">Last Name</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="pageRegLastName" placeholder="Doe" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pageRegContact">Contact Number</label>
+                        <div class="input-icon-wrapper">
+                            <input type="tel" id="pageRegContact" placeholder="09123456789" required>
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pageRegEmail">Email Address</label>
+                        <div class="input-icon-wrapper">
+                            <input type="email" id="pageRegEmail" placeholder="name@example.com" required>
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pageRegPassword">Password</label>
+                        <div class="input-icon-wrapper">
+                            <input type="password" id="pageRegPassword" placeholder="••••••••" required minlength="6">
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, var(--auth-accent), #d97706); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25);">Create My Account</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+
+        // Tab Switching Logic
+        window.switchAuthTab = function(mode) {
+            const loginForm = document.getElementById('standaloneLoginForm');
+            const regForm = document.getElementById('standaloneRegisterForm');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const authTitle = document.getElementById('authTitle');
+            const authSubtitle = document.getElementById('authSubtitle');
+
+            if (mode === 'login') {
+                regForm.classList.remove('active');
+                tabRegister.classList.remove('active');
+                setTimeout(() => {
+                    loginForm.classList.add('active');
+                    tabLogin.classList.add('active');
+                }, 150);
+
+                authTitle.textContent = "Welcome Back";
+                authSubtitle.textContent = "Please enter your credentials to access your account.";
+            } else {
+                loginForm.classList.remove('active');
+                tabLogin.classList.remove('active');
+                setTimeout(() => {
+                    regForm.classList.add('active');
+                    tabRegister.classList.add('active');
+                }, 150);
+
+                authTitle.textContent = "Join Sogo Grand";
+                authSubtitle.textContent = "Create an account for instant room reservations.";
+            }
+        };
+
+        // Handle Login Submission
+        document.getElementById('standaloneLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('pageLoginEmail').value;
+            const password = document.getElementById('pageLoginPassword').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert("Sign-in failed: " + error.message);
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Handle Registration Submission
+        document.getElementById('standaloneRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const firstName = document.getElementById('pageRegFirstName').value;
+            const lastName = document.getElementById('pageRegLastName').value;
+            const contact = document.getElementById('pageRegContact').value;
+            const email = document.getElementById('pageRegEmail').value;
+            const password = document.getElementById('pageRegPassword').value;
+
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+
+            if (authError) {
+                alert("Registration failed: " + authError.message);
+                return;
+            }
+
+            if (authData.user) {
+                await supabase.from('profiles').insert([{
+                    id: authData.user.id,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    contact_number: contact,
+                    role: 'guest'
+                }]);
+
+                alert("Account created successfully!");
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

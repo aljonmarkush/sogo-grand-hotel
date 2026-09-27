@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sogo</title>
+    
+    <!-- Browser Tab Logo (Favicon) -->
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Target containers for injected components -->
+    <div id="header-container"></div>
+
+    <section class="hero">
+        <h1>Comfort. Convenience. Your Stay Starts Here.</h1>
+        <p>Book premium rooms instantly with live availability protection.</p>
+    </section>
+
+    <div class="search-container">
+        <form id="searchForm" class="search-grid">
+            <div class="form-group">
+                <label for="checkIn">Check-In</label>
+                <input type="date" id="checkIn" required>
+            </div>
+            <div class="form-group">
+                <label for="checkOut">Check-Out</label>
+                <input type="date" id="checkOut" required>
+            </div>
+            <div class="form-group">
+                <label for="guests">Guests</label>
+                <input type="number" id="guests" min="1" max="10" value="1" required>
+            </div>
+            <button type="submit">Search Availability</button>
+        </form>
+    </div>
+
+    <main class="results-container">
+        <h2>Available Accommodations</h2>
+        <!-- Matched ID to main.js -->
+        <div id="roomGrid" class="room-grid"></div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <!-- Component Injection Script -->
+    <script>
+        async function loadLayoutComponents() {
+            try {
+                const headRes = await fetch('components/header.html');
+                if (headRes.ok) {
+                    document.getElementById('header-container').innerHTML = await headRes.text();
+                }
+
+                const footRes = await fetch('components/footer.html');
+                if (footRes.ok) {
+                    document.getElementById('footer-container').innerHTML = await footRes.text();
+                }
+            } catch (err) {
+                console.error("Layout component load error:", err);
+            }
+        }
+        loadLayoutComponents();
+    </script>
+
+    <!-- Application Logic -->
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

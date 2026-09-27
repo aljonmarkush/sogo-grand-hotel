@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sogo Grand Hotel — Core Team</title>
+    <link rel="stylesheet" href="css/style.css"> 
+    <style>
+        /* --- OPTIMIZED SMOOTH HORIZONTAL SCROLL SYSTEM --- */
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background-color: var(--bg);
+            color: var(--text-dark);
+        }
+
+        .horizontal-scroll-section {
+            height: 350vh; /* Balanced scroll distance for smooth pacing */
+            position: relative;
+        }
+
+        .horizontal-sticky-wrapper {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            /* Force hardware acceleration */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        .team-header-container {
+            padding: 0 5vw;
+            margin-bottom: 2rem;
+        }
+
+        .team-subtitle {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-title {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-dark);
+        }
+
+        .horizontal-track {
+            display: flex;
+            gap: 2.5rem;
+            padding-left: 5vw;
+            will-change: transform; /* Signals GPU layer optimization */
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* Card Container */
+        .team-card {
+            flex: 0 0 360px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Image Box with Grayscale Default & Bottom Fade */
+        .team-img-box {
+            width: 100%;
+            height: 440px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .team-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: filter, transform;
+        }
+
+        /* Hover: Full color */
+        .team-card:hover .team-img-box img {
+            filter: grayscale(0%);
+            transform: scale(1.03);
+        }
+
+        /* Bottom fade gradient */
+        .team-img-fade {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(to top, var(--bg), transparent);
+            pointer-events: none;
+        }
+
+        /* Social Icons - Slide/Fade on hover */
+        .team-socials {
+            position: absolute;
+            bottom: 1.25rem;
+            left: 1.25rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .team-card:hover .team-socials {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .social-icon:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Content Underneath the Image */
+        .team-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0 0.25rem;
+        }
+
+        .team-member-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.2px;
+        }
+
+        .team-member-role {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--accent);
+            line-height: 1.4;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress-bar-container {
+            width: 90vw;
+            max-width: 1200px;
+            height: 4px;
+            background: var(--border);
+            margin: 2.5rem auto 0 auto;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .scroll-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            transition: width 0.05s linear;
+        }
+
+        @media (max-width: 768px) {
+            .horizontal-scroll-section {
+                height: auto;
+            }
+            .horizontal-sticky-wrapper {
+                position: relative;
+                height: auto;
+            }
+            .horizontal-track {
+                overflow-x: auto;
+                padding-right: 5vw;
+                padding-bottom: 2rem;
+                transform: none !important;
+            }
+            .team-card {
+                flex: 0 0 280px;
+            }
+            .team-img-box {
+                height: 360px;
+            }
+            .scroll-progress-bar-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navigation Header -->
+    <header>
+        <a href="index.html" class="brand-container">
+            <span class="logo-text">Sogo <span>Grand Hotel</span></span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html" style="text-decoration: none; color: var(--text-muted); font-size: 0.875rem; font-weight: 600;">Home</a>
+            <a href="team.html" style="text-decoration: none; color: var(--primary); font-size: 0.875rem; font-weight: 700;">Our Team</a>
+            <button onclick="window.location.href='index.html'">Book a Room</button>
+        </nav>
+    </header>
+
+    <!-- Scroll-Driven Horizontal Animation Section -->
+    <section class="horizontal-scroll-section" id="scrollSection">
+        <div class="horizontal-sticky-wrapper">
+            
+            <div class="team-header-container">
+                <div class="team-subtitle">Our People</div>
+                <h2 class="team-title">Core Team</h2>
+            </div>
+
+            <!-- Moving Track -->
+            <div class="horizontal-track" id="horizontalTrack">
+                <!-- Dynamically injected cards -->
+            </div>
+
+            <!-- Progress Tracker Bar -->
+            <div class="scroll-progress-bar-container">
+                <div class="scroll-progress-bar" id="progressBar"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Sogo Grand Hotel</h3>
+                <p>Comfort, convenience, and seamless booking technology for your ultimate stay experience.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="team.html">Our Team</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>System</h4>
+                <ul>
+                    <li><a href="#">Security & Privacy</a></li>
+                    <li><a href="#">Supabase Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Sogo Grand Hotel. All rights reserved.</p>
+            <p>HRRIS Web Application</p>
+        </div>
+    </footer>
+
+    <!-- Ultra-Smooth RequestAnimationFrame Scroll Engine -->
+    <script>
+        const teamData = [
+            { 
+                name: "John L. Palangeo", 
+                role: "Team Lead", 
+                image: "images/john.jpg", 
+                initials: "JP" 
+            },
+            { 
+                name: "Jonathan Rhyne Battung", 
+                role: "Member", 
+                image: "images/jonathan.jpg", 
+                initials: "JB" 
+            },
+            { 
+                name: "Spencer Ongat", 
+                role: "Member", 
+                image: "images/spencer.jpg", 
+                initials: "SO" 
+            },
+            { 
+                name: "Diane Duyan", 
+                role: "Member", 
+                image: "images/diane.jpg", 
+                initials: "DD" 
+            },
+            { 
+                name: "Bob Smith Gunnaban", 
+                role: "Member", 
+                image: "images/bob.jpg", 
+                initials: "BG" 
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const track = document.getElementById('horizontalTrack');
+
+            if (track) {
+                track.innerHTML = teamData.map(member => `
+                    <div class="team-card">
+                        <div class="team-img-box">
+                            <img src="${member.image}" alt="${member.name}" onerror="this.style.display='none'; this.parentElement.innerText='${member.initials}';">
+                            <div class="team-img-fade"></div>
+                            <div class="team-socials">
+                                <a href="#" class="social-icon" title="Facebook">f</a>
+                                <a href="#" class="social-icon" title="LinkedIn">in</a>
+                                <a href="#" class="social-icon" title="Email">✉</a>
+                            </div>
+                        </div>
+                        <div class="team-info">
+                            <div class="team-member-name">${member.name}</div>
+                            <div class="team-member-role">${member.role}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // High-Performance RAF Scroll Engine
+            const section = document.getElementById('scrollSection');
+            const progressBar = document.getElementById('progressBar');
+            let ticking = false;
+
+            function updateScroll() {
+                if (window.innerWidth > 768) {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight - window.innerHeight;
+                    const scrollY = window.scrollY;
+
+                    let progress = (scrollY - sectionTop) / sectionHeight;
+                    progress = Math.max(0, Math.min(1, progress));
+
+                    const trackWidth = track.scrollWidth - window.innerWidth;
+                    
+                    // Use translate3d for hardware acceleration
+                    track.style.transform = `translate3d(-${progress * trackWidth}px, 0, 0)`;
+
+                    if (progressBar) {
+                        progressBar.style.width = `${progress * 100}%`;
+                    }
+                }
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
